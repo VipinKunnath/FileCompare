@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -28,12 +29,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import javax.swing.JProgressBar;
 
 public class NewFileCompare {
 
 	private JFrame frame;
 	private JTextField textField;
 	private JTextField textField_1;
+	private JProgressBar progressBar;
 	private ExcelDataManager baseFileExcel;
 	private ExcelDataManager newFileExcel;
 	private ExcelDataManager diffFileExcel;
@@ -181,11 +184,17 @@ public class NewFileCompare {
 				int columnKey=findColumnNumOfKey(value,baseFileExcel);
 				HashMap<Integer, HashMap> baseFileMap=baseFileExcel.getCompleteFileMap();
 				
+				int rowSize=baseFileMap.keySet().size();
+				progressBar.setVisible(true);
+				progressBar.setValue(0);
+				
 				for(Integer baseFileKey:baseFileMap.keySet()) {
+					
 					
 					HashMap<Integer, String> rowMap=baseFileMap.get(baseFileKey);
 					String valueToCompare=rowMap.get(columnKey);
 					boolean diffYes=compareWithNewFile(baseFileKey,columnKey,valueToCompare);
+					monitorFileCompareProgress(baseFileKey,rowSize);
 				//	String valueToCompare=
 					
 					
@@ -196,6 +205,16 @@ public class NewFileCompare {
 				//System.out.println(columnKey);
 				
 				
+				
+				
+				
+				
+			}
+
+			private void monitorFileCompareProgress(int baseFileKey, int rowSize) {
+				// TODO Auto-generated method stub
+				int progress=((baseFileKey+1)/rowSize)*100;
+				progressBar.setValue(progress);
 				
 				
 				
@@ -309,7 +328,7 @@ public class NewFileCompare {
 			}
 			
 		});
-		btnCompare.setBounds(180, 186, 89, 23);
+		btnCompare.setBounds(202, 186, 89, 23);
 		frame.getContentPane().add(btnCompare);
 		
 		JButton btnBrowse = new JButton("Browse");
@@ -379,6 +398,12 @@ public class NewFileCompare {
 		});
 		button.setBounds(399, 89, 89, 23);
 		frame.getContentPane().add(button);
+		
+		progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
+		progressBar.setBounds(46, 230, 442, 14);
+		frame.getContentPane().add(progressBar);
+		progressBar.setVisible(false);
 	}
 	
 	@SuppressWarnings("unchecked")
